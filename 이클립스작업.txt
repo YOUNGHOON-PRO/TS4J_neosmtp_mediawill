@@ -1,0 +1,57 @@
+
+################################################################
+이클립스에서 TScheduler 구동을 위해 config 및 파일 경로 절대 경로로 수정
+################################################################
+
+1.	Config.java
+
+	AS-IS
+		pro.load(new FileInputStream("../config/NeoSMTP.conf"));
+	
+	
+	TO-BE
+		//pro.load(new FileInputStream("../config/NeoSMTP.conf"));
+		pro.load(new FileInputStream("./config/NeoSMTP.conf"));
+		
+
+		
+2. 	Operation.java
+
+	AS-IS
+		pro.load(new FileInputStream("../config/net/operation.ini"));
+	
+	TO-BE
+		//pro.load(new FileInputStream("../config/net/operation.ini"));
+		pro.load(new FileInputStream("./config/net/operation.ini"));
+
+
+		
+3. DNSCache.java
+
+	AS-IS
+		new FileReader("../config/net/cache.ini" ));
+	
+	TO-BE
+	
+		//new FileReader("../config/net/cache.ini" ));
+		  new FileReader("./config/net/cache.ini" ));		
+		  
+
+4. DNSCache.java
+
+	AS-IS
+		File mailListFile = new File("../config/net/mailserver");
+	
+	TO-BE
+		//File mailListFile = new File("../config/net/mailserver");
+		File mailListFile = new File("./config/net/mailserver");	
+		  
+
+5. NeoSMTP.conf
+
+	AS-IS
+		Root_Dir=../Queue_0
+	
+	TO-BE
+		#Root_Dir=../Queue_0
+		Root_Dir=./Queue_0		  
