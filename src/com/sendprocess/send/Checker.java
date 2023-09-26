@@ -58,7 +58,7 @@ public class Checker extends Thread
 						catch(Exception e)
 						{
 							LOGGER.error(e);
-							e.printStackTrace();
+							//e.printStackTrace();
 							LogJob.errorLog("Checker","run()",ErrorStatusCode.SOCKET_ERROR_MSG,e.toString());
 							LOGGER.error("Cannot read queue from NeoSMTPv2.5..retry!");
 						}
@@ -79,8 +79,8 @@ public class Checker extends Thread
 			}
 			catch(Exception e)
 			{
-				LOGGER.error(e);
 				LOGGER.error("Cannot Access Receive Process of the NeoSMTPv2.5..retry!");
+				LOGGER.error(e);
 			}
 			finally
 			{
@@ -124,7 +124,7 @@ public class Checker extends Thread
 			catch(InterruptedException e)
 			{
 				LOGGER.error(e);
-				e.printStackTrace();
+				//e.printStackTrace();
 				LogJob.errorLog("Checker", "run()",
 								ErrorStatusCode.THREAD_ERROR_MSG, e.toString());
 			}

@@ -4,9 +4,14 @@ import java.io.*;
 import java.util.*;
 import com.sendprocess.log.LogJob;
 import com.sendprocess.util.ErrorStatusCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Config
 {
+	
+	private static final Logger LOGGER = LogManager.getLogger(Config.class.getName());
+	
 	public static String Root_Dir;
 	public static String DNS_Server_IP;
 	public static String Receive_Server_IP;
@@ -46,8 +51,8 @@ public class Config
 		try
 		{
 			Properties pro = new Properties();
-			//pro.load(new FileInputStream("../config/NeoSMTP.conf"));
-			pro.load(new FileInputStream("./config/NeoSMTP.conf"));
+			pro.load(new FileInputStream("../config/NeoSMTP.conf"));
+			//pro.load(new FileInputStream("./config/NeoSMTP.conf"));
 
 			Root_Dir=(String)pro.get("Root_Dir");
 			Receive_Server_IP=(String)pro.get("Receive_Server_IP");
@@ -80,7 +85,8 @@ public class Config
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			LOGGER.error(e);
+			//e.printStackTrace();
 			LogJob.errorLog("Config","load()",ErrorStatusCode.CFG_INFO_NOT_VALID_MSG,e.toString());
 			return false;
 		}

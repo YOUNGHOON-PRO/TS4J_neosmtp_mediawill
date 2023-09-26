@@ -7,9 +7,14 @@ import com.sendprocess.config.Operation;
 import com.sendprocess.send.NeoSMTP;
 import com.sendprocess.log.LogJob;
 import com.sendprocess.util.ErrorStatusCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FileRecordListen extends Thread
 {
+	
+	private static final Logger LOGGER = LogManager.getLogger(FileRecordListen.class.getName());
+	
 	public FileRecordListen(){}
 
 	public void run()
@@ -22,6 +27,7 @@ public class FileRecordListen extends Thread
 				sleep(Operation.Log_Record_Period * 1000 * 60);
 			}
 			catch(java.lang.InterruptedException e) {
+				LOGGER.error(e);
 			}
 
 			if( NeoSMTP.isPushLog ) //case Error

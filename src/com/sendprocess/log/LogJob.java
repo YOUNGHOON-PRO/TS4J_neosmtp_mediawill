@@ -4,9 +4,14 @@ import java.io.*;
 import com.sendprocess.util.MessageID;
 import com.sendprocess.config.Config;
 import com.sendprocess.config.Operation;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 
 public class LogJob
 {
+	private static final Logger LOGGER = LogManager.getLogger(LogJob.class.getName());
+	
 	/**Root Folder*/
 	public static String ROOT_DIR = ".";
 
@@ -57,7 +62,8 @@ public class LogJob
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			LOGGER.error(e);
+			//e.printStackTrace();
 		}
 		finally
 		{

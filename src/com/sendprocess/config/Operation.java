@@ -4,9 +4,13 @@ import java.io.*;
 import java.util.*;
 import com.sendprocess.log.LogJob;
 import com.sendprocess.util.ErrorStatusCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Operation
 {
+	private static final Logger LOGGER = LogManager.getLogger(Operation.class.getName());
+	
 	public static int
 		Dir_Cleanning_Period ,
 		Update_Period ,
@@ -53,8 +57,8 @@ public class Operation
 		try
         {
 			Properties pro = new Properties();
-			//pro.load(new FileInputStream("../config/net/operation.ini"));
-			pro.load(new FileInputStream("./config/net/operation.ini"));
+			pro.load(new FileInputStream("../config/net/operation.ini"));
+			//pro.load(new FileInputStream("./config/net/operation.ini"));
 
 			Dir_Cleanning_Period= Integer.parseInt( (String)pro.get("Dir_Cleanning_Period") );
 			Update_Period= Integer.parseInt( (String)pro.get("Update_Period") );
@@ -104,7 +108,8 @@ public class Operation
 		}
         catch(IOException e)
         {
-			e.printStackTrace();
+        	LOGGER.error(e);
+			//e.printStackTrace();
         	LogJob.errorLog("Operation","load()", ErrorStatusCode.OPERATION_INFO_NOT_VALID_MSG, e.toString());
 
             return false;

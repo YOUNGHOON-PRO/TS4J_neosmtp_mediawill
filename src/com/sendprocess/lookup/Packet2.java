@@ -55,7 +55,7 @@ public class Packet2
         }
         catch (IOException e) {
         	LOGGER.error(e);
-        	e.printStackTrace();
+        	//e.printStackTrace();
             // LogWriter.writeException("Packet", "extractQuery()", "OutputStream", e);
         }
         return byteArrayOut.toByteArray();

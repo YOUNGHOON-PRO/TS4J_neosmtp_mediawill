@@ -8,19 +8,22 @@ import com.queue.*;
 import com.sendprocess.config.*;
 import com.sendprocess.send.Monitoring;
 import com.sendprocess.util.MessageID;
+
 import com.sendprocess.util.FileManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+
 
 public class MergeSend
 {
 	
 	private static final Logger LOGGER = LogManager.getLogger(MergeSend.class.getName());
 	
+	
 	public static void main(String[] args)
 	{
-		LOGGER.info("");
 		LOGGER.info("NeoSMTP Version 2.5 MergeSender Module Copyright (C) 1999-2002 Neocast Co.,Ltd..");
 
 		if( !Config.load() )
@@ -109,6 +112,9 @@ public class MergeSend
 		Monitoring monitor = new Monitoring();
 		monitor.setThread(dc, mqdc, sc, tm, frl, us);
 		monitor.start();
+
+		new DemonCheck_NeoSMTP("NeoSMTP").start();
+		
 	}
 
         public static void shutdown() {

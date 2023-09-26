@@ -1,11 +1,14 @@
 package com.sendprocess.lookup;
 
 import java.io.*;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class DNSInputStream2
     extends ByteArrayInputStream
 {
+	private static final Logger LOGGER = LogManager.getLogger(DNSInputStream2.class.getName());
+	
     protected DataInputStream dataIn;
     public DNSInputStream2(byte[] data, int off, int len) {
         super(data, off, len);
@@ -72,6 +75,7 @@ public class DNSInputStream2
             return rr;
         }
         catch (Exception e) {
+        	LOGGER.error(e);
             //LogWriter.writeException("DNSInputStream", "readRR()", "Dynamic Class Loading(" + type + ")", e);
             return null;
         }

@@ -6,9 +6,13 @@ import java.util.*;
 
 import com.sendprocess.util.ErrorStatusCode;
 import com.sendprocess.log.LogJob;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CacheStore
 {
+	private static final Logger LOGGER = LogManager.getLogger(CacheStore.class.getName());
+	
 	private static boolean jobEnd = false;
 	private static Vector domainMXVector = new Vector();
 	private static Hashtable domainHash = new Hashtable();
@@ -53,7 +57,8 @@ public class CacheStore
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			LOGGER.error(e);
+			//e.printStackTrace();
 			LogJob.errorLog("CacheStore","getMxHost(String domain)",ErrorStatusCode.GENERAL_ERROR_MSG,e.toString());
 			return "";
 		}

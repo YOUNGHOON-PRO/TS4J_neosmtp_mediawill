@@ -7,9 +7,14 @@ import com.sendprocess.util.FileManager;
 import com.sendprocess.config.Config;
 import com.sendprocess.config.Operation;
 import com.sendprocess.util.ErrorStatusCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class FileRecorder
 {
+	private static final Logger LOGGER = LogManager.getLogger(FileRecorder.class.getName());
+
+	
 	public synchronized static int record(Vector vector, boolean bMainLog)
 	{
 		if( vector.isEmpty() ) {
@@ -105,7 +110,8 @@ public class FileRecorder
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
+			LOGGER.error(e);
 			LogJob.errorLog("FileRecorder","record(Vector vector)",ErrorStatusCode.FILE_NOT_FOUND_MSG,e.toString());
 			return nResult;
 		}

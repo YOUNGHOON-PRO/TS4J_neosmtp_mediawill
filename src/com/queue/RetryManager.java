@@ -1,6 +1,8 @@
 package com.queue;
 
 import com.sendprocess.config.Config;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * <p>Title: NeoSMTP version 2.5</p>
@@ -13,6 +15,8 @@ import com.sendprocess.config.Config;
 
 public class RetryManager extends Thread
 {
+	private static final Logger LOGGER = LogManager.getLogger(RetryManager.class.getName());
+	
 	public RetryManager() {
 	}
 
@@ -25,7 +29,7 @@ public class RetryManager extends Thread
 			try {
 				sleep(1000 * 60 * Config.Retry_Period);
 			}
-			catch(Exception e) {}
+			catch(Exception e) {LOGGER.error(e);}
 		}
 	}
 }

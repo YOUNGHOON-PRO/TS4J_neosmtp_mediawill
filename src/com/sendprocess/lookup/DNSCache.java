@@ -25,8 +25,8 @@ public class DNSCache extends Thread
 		LineNumberReader domainListLn = null;
 		try
 		{
-			//File mailListFile = new File("../config/net/mailserver");
-			File mailListFile = new File("./config/net/mailserver");
+			File mailListFile = new File("../config/net/mailserver");
+			//File mailListFile = new File("./config/net/mailserver");
 
 			String dirPath = mailListFile.getAbsolutePath();
 			String fileList[] = mailListFile.list();
@@ -59,7 +59,7 @@ public class DNSCache extends Thread
 		catch(Exception e)
 		{
 			LOGGER.error(e);
-			e.printStackTrace();
+			//e.printStackTrace();
 			LogJob.errorLog("DNSCache","DNSCache()",ErrorStatusCode.FILE_NOT_FOUND_MSG,e.toString());
 		}finally
 		{
@@ -69,7 +69,7 @@ public class DNSCache extends Thread
 			}catch(Exception e)
 			{
 				LOGGER.error(e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 
@@ -79,8 +79,8 @@ public class DNSCache extends Thread
 		try
 		{
 			domainListLn = new LineNumberReader(
-								//new FileReader("../config/net/cache.ini" ));
-								  new FileReader("./config/net/cache.ini" ));
+								new FileReader("../config/net/cache.ini" ));
+								//new FileReader("./config/net/cache.ini" ));
 
 			String domainStr = "";
 			while( ( domainStr = domainListLn.readLine() ) != null ) {
@@ -96,7 +96,7 @@ public class DNSCache extends Thread
 		catch(Exception e)
 		{
 			LOGGER.error(e);
-			e.printStackTrace();
+			//e.printStackTrace();
 			LogJob.errorLog("DNSCache","DNSCache()",ErrorStatusCode.FILE_NOT_FOUND_MSG,e.toString());
 		}finally
 		{
@@ -106,7 +106,7 @@ public class DNSCache extends Thread
 			}catch(Exception e)
 			{
 				LOGGER.error(e);
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 		}
 	}
@@ -155,7 +155,7 @@ public class DNSCache extends Thread
 					catch(InterruptedException e)
 					{
 						LOGGER.error(e);
-						e.printStackTrace();
+						//e.printStackTrace();
 						LogJob.errorLog("DNSCache","DNSCache()",ErrorStatusCode.FILE_NOT_FOUND_MSG,e.toString());
 					}
 
@@ -178,7 +178,7 @@ public class DNSCache extends Thread
 			catch(InterruptedException e)
 			{
 				LOGGER.error(e);
-				e.printStackTrace();
+				//e.printStackTrace();
 				LogJob.errorLog("DNSCache","run()",ErrorStatusCode.FILE_NOT_FOUND_MSG,e.toString());
 			}
 		}

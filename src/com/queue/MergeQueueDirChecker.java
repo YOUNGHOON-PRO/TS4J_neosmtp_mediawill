@@ -132,7 +132,7 @@ public class MergeQueueDirChecker extends Thread
 			catch(InterruptedException e)
 			{
 				LOGGER.error(e);
-				e.printStackTrace();
+				//e.printStackTrace();
 				LogJob.errorLog("MergeQueueDirChecker", "run()",
 								ErrorStatusCode.THREAD_ERROR_MSG,e.toString());
 			}

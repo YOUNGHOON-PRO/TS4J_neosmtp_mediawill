@@ -7,9 +7,13 @@ import com.sendprocess.log.LogJob;
 import com.sendprocess.config.Config;
 import com.sendprocess.data.SendData;
 import com.sendprocess.util.ErrorStatusCode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class SenderUIListen extends Thread
 {
+	private static final Logger LOGGER = LogManager.getLogger(SenderUIListen.class.getName());
+	
 	private ServerSocket serverSocket;
 	private boolean listen = true;
 
@@ -27,7 +31,8 @@ public class SenderUIListen extends Thread
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
+			LOGGER.error(e);
+			//e.printStackTrace();
         	LogJob.errorLog("SenderUIListen","run()", ErrorStatusCode.SOCKET_ERROR_MSG, e.toString());
 		}
 	}
@@ -64,7 +69,7 @@ class SendUIData extends Thread
 		}
 		catch(NullPointerException e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
         	LogJob.errorLog("SenderUIListen","getThreadSessionList()", ErrorStatusCode.THREAD_ERROR_MSG, e.toString());
 			return "error";
 		}
@@ -121,7 +126,7 @@ class SendUIData extends Thread
 		}
 		catch(IOException e)
 		{
-			e.printStackTrace();
+			//e.printStackTrace();
         	LogJob.errorLog("SenderUIListen","run()", ErrorStatusCode.SOCKET_ERROR_MSG, e.toString());
 			try
 			{
@@ -131,7 +136,7 @@ class SendUIData extends Thread
 			}
 			catch(IOException e1)
 			{
-				e1.printStackTrace();
+				//e1.printStackTrace();
 			}
 		}
 	}

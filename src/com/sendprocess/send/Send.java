@@ -60,7 +60,7 @@ public class Send implements Runnable
 			}
 			catch(IOException ex) {
 				LOGGER.error(ex);
-				ex.printStackTrace();
+				//ex.printStackTrace();
 			}
 		}
 	}
@@ -116,7 +116,7 @@ public class Send implements Runnable
 		catch(Exception e)
 		{
 			LOGGER.error(e);
-			e.printStackTrace();
+			//e.printStackTrace();
 			LogJob.errorLog("Send", "Send(String info)",
 							ErrorStatusCode.SMTP_INFO_NOT_VALID_MSG, e.toString());
 			isOK = false;
@@ -645,7 +645,7 @@ public class Send implements Runnable
 		}
 		catch(Exception e) {
 			LOGGER.error(e);
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		finally
 		{
@@ -703,7 +703,7 @@ public class Send implements Runnable
 		catch(Exception e)
 		{
 			LOGGER.error(e);
-			e.printStackTrace();
+			//e.printStackTrace();
 			LogJob.errorLog("Send", "sendLine(String line)",
 							ErrorStatusCode.IO_ERROR_MSG, e.toString());
 			if( debugStream != null )
