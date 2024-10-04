@@ -30,7 +30,6 @@ public final class NeoSMTP
 
 	public static final int CONNECT = 0;
 	public static final int HELO = 1;
-	public static final int STARTTLS = 11;
 	public static final int MAILFROM = 2;
 	public static final int RCPTTO = 3;
 	public static final int DATA = 4;

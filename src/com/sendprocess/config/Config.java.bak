@@ -85,17 +85,6 @@ public class Config
 			SMTPLoggingDir = Config.Root_Dir + File.separator + "SMTP_LOGGING";
 
 			GARBAGE_START_TIME = Integer.parseInt((String)pro.get("GARBAGE_START_TIME"));
-			
-	        // TLS 설정을 읽음
-	        String tlsTargetDomain = pro.getProperty("TLS.target.domain", "").trim();
-	        if(tlsTargetDomain.length() > 0) {
-	            String[] tlsTargetDomainArray = tlsTargetDomain.split(",");
-	            for(int i = 0; i < tlsTargetDomainArray.length; i++) {
-	                tlsTargetDomainList.add(tlsTargetDomainArray[i].trim().toLowerCase());
-	            }
-	        }
-	        tlsVersion = pro.getProperty("TLS.version", "").trim();
-
 			return true;
 		}
 		catch(IOException e)

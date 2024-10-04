@@ -2,10 +2,6 @@ package com.sendprocess.send;
 
 import java.io.*;
 import java.util.*;
-
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-
 import java.net.*;
 import java.text.*;
 import java.lang.*;
@@ -28,14 +24,11 @@ public class Send implements Runnable
 	private static final Logger LOGGER = LogManager.getLogger(Send.class.getName());
 	
 	private Thread thread;
-	private ThreadGroup threadGroup;
 	private Socket socket;
 	private PrintWriter out;
 	private BufferedReader in;
 	private InputStream iStream;
 	private OutputStream oStream;
-	private InputStream sslInputStream;
-	private OutputStream sslOutputStream;
 	private String responseCode = null;
 
 	private boolean isOK = false;
@@ -55,8 +48,6 @@ public class Send implements Runnable
 
 	private String smtpHeader = "";
 	private String smtpBody = "";
-	private String LS = System.getProperty("line.separator");
-	private boolean isTls = false;
 
 	private static PrintStream debugStream;
 	static {
@@ -76,7 +67,6 @@ public class Send implements Runnable
 
 	public Send(String info )
 	{
-		LOGGER.info("Send(\"{}\")", info);
 		DataInputStream dis = null;
 
 		try
@@ -170,7 +160,6 @@ public class Send implements Runnable
 	{
 		try {
 			new File(this.msgFilePath).delete();
-			LOGGER.info("DELETE File : {}", this.msgFilePath);
 		}
 		catch(Exception e) {
 			LOGGER.error(e);
@@ -329,57 +318,6 @@ public class Send implements Runnable
 				return;
 			}
 
-	        // keultae TLS 적용
-	        // 성능 테스트시에는 TLS 적용하지 않음
-	        if(Config.tlsTargetDomainList.size() > 0) {            
-	            if(domain != null) {
-	                for(int i = 0; i < Config.tlsTargetDomainList.size(); i++) {
-	                    if(Config.tlsTargetDomainList.get(i).equals(domain)) {
-	                        LOGGER.debug("TLS 적용: {}, {}", rEmail, domain);
-	                        isTls = true;
-	                        break;
-	                    }
-	                }
-	            }
-	            
-	            if(isTls) {
-	            	sendLine("STARTTLS");
-                    // gmail.com 정상 응답값 : 220 2.0.0 Ready to start TLS
-	            	strRetCode = getResponse();
-                    LOGGER.debug("STARTTLS 응답: {}, this.errorMessage: {}", strRetCode, this.errorMessage);
-                    if ( strRetCode == "" ) {
-                    	throw new SmtpProtocolException(NeoSMTP.STARTTLS);
-                    } else if (strRetCode.equals("220")) {
-                        try {
-                            SSLSocketFactory sslFactory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-                            SSLSocket sslSocket = (SSLSocket) sslFactory.createSocket(
-                                    socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
-//	                            LOGGER.info("tlsVersion|{}|", ConfigLoader.tlsVersion);
-                            if( Config.tlsVersion.length() > 0) {
-                                // TLS 버전 1.2(TLSv1.2)로 설정. 이 설정 없을 시 자동으로 1.3(TLSv1.3)으로 진행됨
-                                sslSocket.setEnabledProtocols(new String[]{Config.tlsVersion});
-                            }
-                            
-                            // DATA 전송시 OutputStream을 사용해서 저장
-                            this.sslOutputStream = sslSocket.getOutputStream();
-                            this.sslInputStream = sslSocket.getInputStream();
-                            this.out = new PrintWriter(new OutputStreamWriter(this.sslOutputStream), true);
-                            this.in = new BufferedReader(new InputStreamReader(this.sslInputStream));
-
-//                            this.out.println("HELO enders.co.kr");
-//                            this.out.flush();
-//                            String line = this.in.readLine();
-//                            LOGGER.info("line: {}", line);
-                        } catch (IOException e) {
-                            LOGGER.error("ERR", e);
-                        }
-                    } else {
-        				retry();
-        				return;
-                    }
-	            }
-	        }
-			
 			sb = new StringBuffer();
 			this.smtpCommand = (sb.append("MAIL FROM: &lt;").append(sEmail).append("&gt;")).toString();
 			sb = new StringBuffer();
@@ -684,11 +622,7 @@ public class Send implements Runnable
 		try
 		{
 			bis = new ByteArrayInputStream(data);
-			if(this.isTls) {
-				// this.sslOutputStream 사용
-			} else {
-				dos = new DataOutputStream(oStream);
-			}
+			dos = new DataOutputStream(oStream);
 			byte[] sendbuff = new byte[buffsize];
 			int readcnt = 0;
 			while( (readcnt = bis.read(sendbuff, 0, buffsize)) != -1 )
@@ -697,30 +631,21 @@ public class Send implements Runnable
 				{
 					byte[] sTemp = new byte[readcnt];
 					System.arraycopy(sendbuff, 0, sTemp, 0, readcnt);
-					if(this.isTls) {
-						this.sslOutputStream.write(sTemp);
-						this.sslOutputStream.flush();
-					} else {
-						dos.write(sTemp);
-						dos.flush();
-					}
+					dos.write(sTemp);
+					dos.flush();
 					sTemp = null;
 					break;
 				}
-				
-				if(this.isTls) {
-					this.sslOutputStream.write(sendbuff);
-					this.sslOutputStream.flush();
-				} else {
-					dos.write(sendbuff);
-					dos.flush();
-				}
+
+				dos.write(sendbuff);
+				dos.flush();
 			}
 
 			sendbuff = null;
 		}
 		catch(Exception e) {
-			LOGGER.error("ERR", e);
+			LOGGER.error(e);
+			//e.printStackTrace();
 		}
 		finally
 		{
@@ -777,7 +702,8 @@ public class Send implements Runnable
 		}
 		catch(Exception e)
 		{
-			LOGGER.error("ERR", e);
+			LOGGER.error(e);
+			//e.printStackTrace();
 			LogJob.errorLog("Send", "sendLine(String line)",
 							ErrorStatusCode.IO_ERROR_MSG, e.toString());
 			if( debugStream != null )
@@ -807,21 +733,6 @@ public class Send implements Runnable
 			this.errorMessage = replaceBraket(sb.toString());
 			String temp = "";
 
-			/**
-			 * EHLO enders.co.kr
-			 * 250-mx.google.com at your service, [61.74.110.188]\r\n
-			 * 250-SIZE 157286400\r\n
-			 * 250-8BITMIME\r\n
-			 * 250-STARTTLS\r\n
-			 * 250-ENHANCEDSTATUSCODES\r\n
-			 * 250-PIPELINING\r\n
-			 * 250-CHUNKING\r\n
-			 * 250 SMTPUTF8\r\n
-			 * 제일 끝 4번째 '-'가 없는 250을 리턴.
-			 * 
-			 * 제일 끝의 개인문자가 없어도 제일 끝 라인의 앞 3글자를 리턴함
-			 * 250 SMTPUTF8
-			 */
 			StringTokenizer st = new StringTokenizer(this.errorMessage, "\n");
 			int nCount = st.countTokens();
 			int nIndex = 0;
@@ -881,7 +792,6 @@ public class Send implements Runnable
 	}
 
 	boolean bResult = true;
-	/*
 	DataInputStream dis = null;
 	long startTime = System.currentTimeMillis();
 
@@ -931,38 +841,6 @@ public class Send implements Runnable
 
 
 	}
-	*/
-	
-	/*
-	 * 여러줄 응답 처리
-	 * 
-	 * telnet alt1.gmail-smtp-in.l.google.com 25
-	 * 220 mx.google.com ESMTP m13-20020a63f60d000000b005c600ffa335si9013482pgh.217 - gsmtp
-	 * EHLO enders.co.kr
-	 * 250-mx.google.com at your service, [61.74.110.188]
-	 * 250-SIZE 157286400
-	 * 250-8BITMIME
-	 * 250-STARTTLS
-	 * 250-ENHANCEDSTATUSCODES
-	 * 250-PIPELINING
-	 * 250-CHUNKING
-	 * 250 SMTPUTF8
-	 *  
-	 */
-	String line = null;
-    try {
-		while ( (line = this.in.readLine()) != null) {
-		    sb.append(line).append(this.LS);
-		    if (line.length() > 3) {
-		        if (line.charAt(3) != '-') {
-		            bResult = true;
-		            break;
-		        }
-		    }
-		}
-	} catch (IOException e) {
-		LOGGER.error("ERR", e);
-	}	
 	return bResult;
  }
 /*
@@ -1033,7 +911,6 @@ public class Send implements Runnable
 				.append(msgNo).append(Operation.File_Sep).append(retry + 1).toString()));
 	}
 
-	// <를 	"&lt;"로 >를 "&gt;"로 변환
 	private String replaceBraket(String msg)
 	{
 		msg = msg.trim();
@@ -1075,33 +952,5 @@ public class Send implements Runnable
 		}
 
 		return msg;
-	}
-	
-	public static void main(String[] args) {
-		String LS = System.getProperty("line.separator");
-		StringBuffer sb = new StringBuffer();
-				
-		sb.append("250-mx.google.com at your service, [61.74.110.188]").append(LS);
-		sb.append("250-SIZE 157286400").append(LS);
-		sb.append("250-8BITMIME").append(LS);
-		sb.append("250-STARTTLS").append(LS);
-		sb.append("250-ENHANCEDSTATUSCODES").append(LS);
-		sb.append("250-PIPELINING").append(LS);
-		sb.append("250-CHUNKING").append(LS);
-//		sb.append("250 SMTPUTF8").append(LS);
-		sb.append("250 SMTPUTF8");
-		
-		System.out.printf("sb.toString():<<<%s>>>%s", sb.toString(), LS);
-		StringTokenizer st = new StringTokenizer(sb.toString(), "\n");
-		int nCount = st.countTokens();
-		System.out.printf("nCount:%d%s", nCount, LS);
-		int nIndex = 0;
-		String[] buffResp = new String[nCount];
-		while( st.hasMoreElements() ) {
-			buffResp[nIndex++] = st.nextToken().trim();
-		}
-		String returnVal = buffResp[nCount - 1].substring(0, 3);
-		System.out.printf("returnVal:<%s>\r\n", returnVal);
-		
 	}
 }
